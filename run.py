@@ -83,7 +83,6 @@ def picking_function(user_name):
     pick_list = get_picks_from_shipment(shipment_num)
     if len(pick_list) >= 1:
         print('picks found')
-        print(pick_list)
         user_picking(pick_list)
     else:
         print('no picks found')
@@ -100,12 +99,28 @@ def get_picks_from_shipment(shipment_num):
     return picking_sheet
 
 def user_picking(pick_list):
-    picking_dictionary = {}
-    for lists in pick_list:
-        picking_dictionary["Item_{0}".format(lists[0])] = lists
-    for values in picking_dictionary:
-        print(picking_dictionary[values])
-           
+    while len(pick_list) >= 1:
+        print(pick_list)
+        for lists in pick_list:
+            print(f'Item location is: {lists[3]}')
+            item_check_code_inp = input(print('Please enter the location check code:\n'))
+            while True:
+                if item_check_code_inp == lists[4]:
+                    print('check code is correct\n')
+                    break
+                else:
+                    print('check code is incorrect please try again.\n')
+            print(f'You need to pick {lists[2]} of these items')
+            item_id_inp = input(print('Please enter the item id'))
+            while True:
+                if item_id_inp == lists[0]:
+                    print('Pick complete')
+                    print(pick_list)
+                    del pick_list[0]
+                    break
+                else:
+                    print('Item id incorrect please try again')
+            
 def main():
     user_name = request_login_data()
     program_function = select_program_function(user_name)
