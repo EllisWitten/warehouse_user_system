@@ -22,17 +22,19 @@ def request_login_data():
     while True:
         print('Welcome to the Warehouse User Software.')
         print('PLease enter your username and password ...\n')
-        user_name = input('Username:')
-        password = input('Password:')
+        user_name = input('Username:\n')
+        password = input('Password:\n')
         
         if validate_user_name(user_name) == True:
             print('Username is accepted')
             if validate_password(user_name,password) == True:
                 print('Password Accepted')
-                print(f'Welcome {user_name}')
+                return user_name
                 break
+            else:
+                print('Password is incorrect')
         else:
-            print('Password or username was inccorect')
+            print('Username is incorrect')
     
 def validate_user_name(user_name):
     all_user_names = []
@@ -41,7 +43,6 @@ def validate_user_name(user_name):
     if user_name in all_user_names:
         return True
     else:
-        print('Username is incorrect')
         return False
 
 def validate_password(user_name,password):
@@ -50,7 +51,31 @@ def validate_password(user_name,password):
             true_password = data[1]
             if password == true_password:
                 return True
+
+def select_program_function(user_name):
+    print(f'\nWelcome back {user_name}\n')
+    while True:
+        print('1)Picking')
+        print('2)Put Away')
+        print('3)Log Out')
+        program_function = input('\nPlease enter either 1,2 or 3:\n')
+        if program_function == '1':
+            return program_function
+            break
+        elif program_function == '2':
+            return program_function
+            break
+        elif program_function == '3':
+            print(f'Goodbye {user_name}')
+            exit()
+        else:
+            print('Please enter a valid option')
 def main():
-    request_login_data()
+    user_name = request_login_data()
+    program_function = select_program_function(user_name)
+    if program_function == '1':
+        picking_function()
+    elif program_function == '2':
+        put_away_function()
 
 main()
