@@ -26,8 +26,11 @@ def request_login_data():
         password = input('Password:')
         
         if validate_user_name(user_name) == True:
-            print(f'Welcome {user_name}')
-            break
+            print('Username is accepted')
+            if validate_password(user_name,password) == True:
+                print('Password Accepted')
+                print(f'Welcome {user_name}')
+                break
         else:
             print('Password or username was inccorect')
     
@@ -40,7 +43,13 @@ def validate_user_name(user_name):
     else:
         print('Username is incorrect')
         return False
-    
+
+def validate_password(user_name,password):
+    for data in user_login_data:
+        if data[0] == user_name:
+            true_password = data[1]
+            if password == true_password:
+                return True
 def main():
     request_login_data()
 
