@@ -70,11 +70,47 @@ def select_program_function(user_name):
             exit()
         else:
             print('Please enter a valid option')
+
+def picking_function(user_name):
+    picking_sheet = SHEET.worksheet('picking_sheet')
+    picking_sheet_data = picking_sheet.get_all_values()
+    if len(picking_sheet_data) == 1:
+        print('\nNo picks avalible')
+        print()
+        select_program_function(user_name)
+    
+    shipment_num = input('Please enter the shipment number:\n')
+    pick_list = get_picks_from_shipment(shipment_num)
+    if len(pick_list) >= 1:
+        print('picks found')
+        print(pick_list)
+        user_picking(pick_list)
+    else:
+        print('no picks found')
+        exit()
+
+def get_picks_from_shipment(shipment_num):
+    picking_sheet = SHEET.worksheet('picking_sheet')
+    picking_sheet_data = picking_sheet.get_all_values()
+    picking_sheet = []
+    for data in picking_sheet_data:
+        for element in data:
+            if element == shipment_num:
+                picking_sheet.append(data)
+    return picking_sheet
+
+def user_picking(pick_list):
+    picking_dictionary = {}
+    for lists in pick_list:
+        picking_dictionary["Item_{0}".format(lists[0])] = lists
+    for values in picking_dictionary:
+        print(picking_dictionary[values])
+           
 def main():
     user_name = request_login_data()
     program_function = select_program_function(user_name)
     if program_function == '1':
-        picking_function()
+        picking_function(user_name)
     elif program_function == '2':
         put_away_function()
 
