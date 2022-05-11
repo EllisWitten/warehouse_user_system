@@ -12,8 +12,11 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('warehouse_user_system')
 
+global_shipment_num = ''
 user_login_worksheet = SHEET.worksheet('user_login')
 user_login_data = user_login_worksheet.get_all_values()
+picking_sheet_worksheet = SHEET.worksheet('picking_sheet')
+picking_sheet_data = picking_sheet_worksheet.get_all_values()
 
 def request_login_data():
     """
@@ -84,8 +87,6 @@ def picking_function(user_name):
     """
     
     """
-    picking_sheet = SHEET.worksheet('picking_sheet')
-    picking_sheet_data = picking_sheet.get_all_values()
     if len(picking_sheet_data) == 1:
         print('\nNo picks avalible')
         print()
@@ -95,14 +96,13 @@ def picking_function(user_name):
     pick_list = get_picks_from_shipment(shipment_num)
     if len(pick_list) >= 1:
         print('picks found')
-        user_picking(pick_list)
+        print(shipment_num)
+        user_picking(pick_list, shipment_num)
     else:
         print('no picks found')
         exit()
 
 def get_picks_from_shipment(shipment_num):
-    picking_sheet = SHEET.worksheet('picking_sheet')
-    picking_sheet_data = picking_sheet.get_all_values()
     picking_sheet = []
     for data in picking_sheet_data:
         for element in data:
@@ -110,9 +110,8 @@ def get_picks_from_shipment(shipment_num):
                 picking_sheet.append(data)
     return picking_sheet
 
-def user_picking(pick_list):
+def user_picking(pick_list, shipment_num):
     while len(pick_list) >= 1:
-        print(pick_list)
         for lists in pick_list[:]:
             print(f'Item location is: {lists[3]}\n')
             while True:
@@ -129,19 +128,36 @@ def user_picking(pick_list):
                 item_id_inp = input(print('Please enter the item id...'))
                 if item_id_inp == lists[0]:
                     print('Pick complete')
-                    print(pick_list)
                     pick_list.pop(0)
+                    print('returning 1')
                     break
                 elif (item_id_inp == 'exit'):
+                    print('exit')
                     exit()
                 else:
                     print('Item id incorrect please try again')
+            print('returning 3')
+            print(shipment_num)
+            global global_shipment_num
+            global_shipment_num = shipment_num
+ 
+def update_pick_status(shipment_num):
+    print('updating pick status...')
+    print(picking_sheet_data)
+    picked_list = []
+    for data in picking_sheet_data:
+        for element in data:
+            if element == shipment_num:
+                data[6] = 'picked'
+                picked_list.append(data)
+    print(picked_list)
 
 def main():
     user_name = request_login_data()
     program_function = select_program_function(user_name)
     if program_function == '1':
         picking_function(user_name)
+        update_pick_status(global_shipment_num)
     elif program_function == '2':
         put_away_function()
 
