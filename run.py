@@ -37,6 +37,9 @@ def request_login_data():
             print('Username is incorrect')
     
 def validate_user_name(user_name):
+    """
+    Checks the sername given matches on in the database
+    """
     all_user_names = []
     for data in user_login_data[1:]:
         all_user_names.append(data[0])
@@ -46,6 +49,9 @@ def validate_user_name(user_name):
         return False
 
 def validate_password(user_name,password):
+    """
+    Checks the pasowrd is corrct for the username given
+    """
     for data in user_login_data:
         if data[0] == user_name:
             true_password = data[1]
@@ -53,6 +59,9 @@ def validate_password(user_name,password):
                 return True
 
 def select_program_function(user_name):
+    """
+    Allows the user to pick which function they want the program to run and execute it
+    """
     print(f'\nWelcome back {user_name}\n')
     while True:
         print('1)Picking')
@@ -72,6 +81,9 @@ def select_program_function(user_name):
             print('Please enter a valid option')
 
 def picking_function(user_name):
+    """
+    
+    """
     picking_sheet = SHEET.worksheet('picking_sheet')
     picking_sheet_data = picking_sheet.get_all_values()
     if len(picking_sheet_data) == 1:
@@ -101,26 +113,30 @@ def get_picks_from_shipment(shipment_num):
 def user_picking(pick_list):
     while len(pick_list) >= 1:
         print(pick_list)
-        for lists in pick_list:
-            print(f'Item location is: {lists[3]}')
-            item_check_code_inp = input(print('Please enter the location check code:\n'))
+        for lists in pick_list[:]:
+            print(f'Item location is: {lists[3]}\n')
             while True:
+                item_check_code_inp = input(print('\nPlease enter the location check code:\n'))
                 if item_check_code_inp == lists[4]:
                     print('check code is correct\n')
                     break
+                elif (item_check_code_inp == 'exit'):
+                    exit()
                 else:
                     print('check code is incorrect please try again.\n')
             print(f'You need to pick {lists[2]} of these items')
-            item_id_inp = input(print('Please enter the item id'))
             while True:
+                item_id_inp = input(print('Please enter the item id...'))
                 if item_id_inp == lists[0]:
                     print('Pick complete')
                     print(pick_list)
-                    del pick_list[0]
+                    pick_list.pop(0)
                     break
+                elif (item_id_inp == 'exit'):
+                    exit()
                 else:
                     print('Item id incorrect please try again')
-            
+
 def main():
     user_name = request_login_data()
     program_function = select_program_function(user_name)
