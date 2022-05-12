@@ -113,11 +113,17 @@ def display_pick_to_user(pick_list):
     """
     while len(pick_list) >= 1:
         pick_list_2 = pick_list
+        
         for lists in pick_list[:]:
-            print(f'The item location is:{lists[3]}\n')
+            print('Current Pick is...')
+            print(f'Item Description:{lists[1]}')
+            print(f'Quantity Needed:{lists[2]}\n')
+            print(f'Please go to:{lists[3]}\n')
+            
             while True:
                 check_code_inp = input('Please enter the check code for this location:\n')
                 is_check_code_valid = validate_check_code(lists, check_code_inp)
+                
                 if is_check_code_valid:
                     print('Check code is valid!\n')
                     break
@@ -128,6 +134,7 @@ def display_pick_to_user(pick_list):
                 is_item_id_valid = validate_item_id(lists, item_id_inp)
                 if is_item_id_valid:
                     print('Item id is valid!\n')
+                    print('Item picked successfully')
                     break
                 else:
                     print('Item id is incorrect please try again...')
@@ -186,6 +193,7 @@ def main():
     program_function = select_program_function(user_name)
     if program_function == '1':
         picking_function(user_name)
+        program_function(user_name)
     elif program_function == '2':
         put_away_function()
 
