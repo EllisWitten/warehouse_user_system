@@ -30,7 +30,7 @@ def request_login_data():
         
         if validate_user_name(user_name) == True:
             print('Username is accepted')
-            if validate_password(user_name,password) == True:
+            if validate_password(user_name, password) == True:
                 print('Password Accepted')
                 return user_name
                 break
@@ -82,82 +82,110 @@ def select_program_function(user_name):
             exit()
         else:
             print('Please enter a valid option')
-
 def picking_function(user_name):
-    """
+    """ Allows the user to complete through the picklist """
+    shipment_num = get_shipment_num()
+    pick_list = get_pick_list(shipment_num)
+    display_pick_to_user(pick_list)
+    new_picking_sheet_data = update_new_pick_list(shipment_num)
+    picking_sheet_worksheet.update(new_picking_sheet_data)
     
-    """
-    if len(picking_sheet_data) == 1:
-        print('\nNo picks avalible')
-        print()
-        select_program_function(user_name)
     
+def get_shipment_num():
+    """
+    Gets the shipment nnumber from the user
+    """
     shipment_num = input('Please enter the shipment number:\n')
-    pick_list = get_picks_from_shipment(shipment_num)
-    if len(pick_list) >= 1:
-        print('picks found')
-        print(shipment_num)
-        user_picking(pick_list, shipment_num)
-    else:
-        print('no picks found')
-        exit()
+    return(shipment_num)
 
-def get_picks_from_shipment(shipment_num):
-    picking_sheet = []
-    for data in picking_sheet_data:
-        for element in data:
-            if element == shipment_num:
-                picking_sheet.append(data)
-    return picking_sheet
+def get_pick_list(shipment_num):
+    pick_list = []
+    for pick in picking_sheet_data:
+        for item in pick:
+            if item == shipment_num:
+                pick_list.append(pick)
+    print('Pick list retrieved')
+    return(pick_list)
 
-def user_picking(pick_list, shipment_num):
+def display_pick_to_user(pick_list):
+    """
+    Dispay the pick to the user and validate the check code and item id.
+    """
     while len(pick_list) >= 1:
+        pick_list_2 = pick_list
         for lists in pick_list[:]:
-            print(f'Item location is: {lists[3]}\n')
+            print(f'The item location is:{lists[3]}\n')
             while True:
-                item_check_code_inp = input(print('\nPlease enter the location check code:\n'))
-                if item_check_code_inp == lists[4]:
-                    print('check code is correct\n')
+                check_code_inp = input('Please enter the check code for this location:\n')
+                is_check_code_valid = validate_check_code(lists, check_code_inp)
+                if is_check_code_valid:
+                    print('Check code is valid!\n')
                     break
-                elif (item_check_code_inp == 'exit'):
-                    exit()
                 else:
-                    print('check code is incorrect please try again.\n')
-            print(f'You need to pick {lists[2]} of these items')
+                    print('Check code is incorrect please try again...')
             while True:
-                item_id_inp = input(print('Please enter the item id...'))
-                if item_id_inp == lists[0]:
-                    print('Pick complete')
-                    pick_list.pop(0)
-                    print('returning 1')
+                item_id_inp = input('Please enter the id for this item:\n')
+                is_item_id_valid = validate_item_id(lists, item_id_inp)
+                if is_item_id_valid:
+                    print('Item id is valid!\n')
                     break
-                elif (item_id_inp == 'exit'):
-                    print('exit')
-                    exit()
                 else:
-                    print('Item id incorrect please try again')
-            print('returning 3')
-            print(shipment_num)
-            global global_shipment_num
-            global_shipment_num = shipment_num
- 
-def update_pick_status(shipment_num):
-    print('updating pick status...')
-    print(picking_sheet_data)
-    picked_list = []
-    for data in picking_sheet_data:
-        for element in data:
-            if element == shipment_num:
-                data[6] = 'picked'
-                picked_list.append(data)
-    print(picked_list)
+                    print('Item id is incorrect please try again...')
+            remove_pick_from_list(pick_list, lists)
+        print('pick complete')
+
+def update_new_pick_list(shipment_num):
+    pick_list = get_pick_list(shipment_num)
+    updated_pick_list = []
+    print(pick_list)
+    for lists in pick_list:
+        lists[6] = 'picked'
+        updated_pick_list.append(lists)
+    print(updated_pick_list)
+    new_pick_list = replace_pick_items_in_pick_list(pick_list, updated_pick_list)
+    return(new_pick_list)
+    
+def replace_pick_items_in_pick_list(pick_list, updated_pick_list):
+    """
+    replacing pick list items
+    """
+    print('replacing items')
+    for lists in pick_list:
+        item_id = lists[0]
+        item_shipping_number = lists[5]
+        for lists_2 in updated_pick_list:
+            item_id_2 = lists_2[0]
+            item_shipping_number_2 = lists_2[5]
+            if (item_id == item_id_2) and (item_shipping_number == item_shipping_number_2):
+                picking_sheet_data.remove(lists)
+                picking_sheet_data.append(lists_2)
+                return picking_sheet_data
+
+def remove_pick_from_list(pick_lists, lists):
+    pick_lists.remove(lists)
+    
+def validate_check_code(pick, check_code):
+    print('vaidating check code...')
+    if pick[4] == check_code:
+        return True
+    else:
+        return False
+    
+def validate_item_id(pick, item_id):
+    print('vaidating item id...')
+    if pick[0] == item_id:
+        return True
+    else:
+        return False
 
 def main():
+    """
+    Runs the program
+    """
     user_name = request_login_data()
     program_function = select_program_function(user_name)
     if program_function == '1':
         picking_function(user_name)
-        update_pick_status(global_shipment_num)
     elif program_function == '2':
         put_away_function()
 
