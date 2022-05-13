@@ -85,11 +85,33 @@ def select_program_function(user_name):
 def picking_function(user_name):
     """ Allows the user to complete through the picklist """
     shipment_num = get_shipment_num()
-    pick_list = get_pick_list(shipment_num)
-    display_pick_to_user(pick_list)
-    new_picking_sheet_data = update_new_pick_list(shipment_num)
-    picking_sheet_worksheet.update(new_picking_sheet_data)
+    are_picks_available = check_picks_are_available(shipment_num)
+    if are_picks_available == True:
+        pick_list = get_pick_list(shipment_num)
+        display_pick_to_user(pick_list)
+        new_picking_sheet_data = update_new_pick_list(shipment_num)
+        picking_sheet_worksheet.update(new_picking_sheet_data)
+        select_program_function(user_name)
+    else:
+        print('No picks available for this shipment')
+        select_program_function(user_name)
+        
+def check_picks_are_available(shipment_num):
+    """
+    checks that there are picks available for that shipment number.
+    """
+    pick_list = []
+    for pick in picking_sheet_data:
+        for item in pick:
+            if item == shipment_num:
+                pick_list.append(pick)
+    for lists in pick_list:
+        if lists[6] == 'unpicked':
+            return True
+        else: 
+            return False
     
+        
     
 def get_shipment_num():
     """
@@ -99,6 +121,9 @@ def get_shipment_num():
     return(shipment_num)
 
 def get_pick_list(shipment_num):
+    """
+    Gets picklist from the data sheet with the correct shipping number
+    """
     pick_list = []
     for pick in picking_sheet_data:
         for item in pick:
