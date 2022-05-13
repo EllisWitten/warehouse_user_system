@@ -41,7 +41,7 @@ def request_login_data():
     
 def validate_user_name(user_name):
     """
-    Checks the sername given matches on in the database
+    Checks the username given matches on in the database
     """
     all_user_names = []
     for data in user_login_data[1:]:
@@ -66,6 +66,7 @@ def select_program_function(user_name):
     Allows the user to pick which function they want the program to run and execute it
     """
     print(f'\nWelcome back {user_name}\n')
+    print('Please select a function')
     while True:
         print('1)Picking')
         print('2)Put Away')
@@ -138,7 +139,7 @@ def display_pick_to_user(pick_list):
     """
     while len(pick_list) >= 1:
         pick_list_2 = pick_list
-        
+
         for lists in pick_list[:]:
             print('Current Pick is...')
             print(f'Item Description:{lists[1]}')
