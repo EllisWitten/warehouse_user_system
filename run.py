@@ -66,7 +66,6 @@ def select_program_function(user_name):
     Allows the user to pick which function they want the program to run and execute it
     """
     print(f'\nWelcome back {user_name}\n')
-    print('Please select a function')
     while True:
         print('1)Picking')
         print('2)Put Away')
