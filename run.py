@@ -193,7 +193,6 @@ def main():
     program_function = select_program_function(user_name)
     if program_function == '1':
         picking_function(user_name)
-        program_function(user_name)
     elif program_function == '2':
         put_away_function()
 
